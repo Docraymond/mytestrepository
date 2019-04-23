@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Php</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" /> 
+<script type="text/javascript" src="jquery.js"></script>
+<link rel="stylesheet" href="bootstrap3/dist/css/bootstrap.css">
+<style type="text/css">
+#gallery {border:1px solid brown;}
+  
+</style>
+</head>
+<body>
+<div class="container" >
+ <div> 
+ <ul>
+ <li>Fisrt Item</li>
+ <li>Fisrt Item</li>
+ <li>Fisrt Item</li>
+ <li>Fisrt Item</li>
+ <li>Fisrt Item</li>
+ </ul>
+ </div>
+<div id="gallery" class="row"  >
+   
+   </div>
+</div>
+ <script type="text/javascript">
+ $(document).ready(function(){
+  $('.list a').click(function(e){
+  var url= $(this).attr('href');
+  $('#displayPhy').load(url);
+  e.preventDefault();
+  });
+  
+ });
+ $(document).ready(function(){
+ GALLERY.init();
+ });
+ var GALLERY = {
+ container:"#gallery",
+ url:"galleryimg",
+ attempt:3,
+ delay:1000,
+ reset:function(){
+ this.delay=1000;
+ this.attempt=3;
+ },
+ running: false,
+ init: function(){
+   var _gallery = this;
+   $(window).scroll(function(){
+    _gallery.checkScroll();
+    });
+    this.load();
+  },
+  checkScroll: function(){
+  var gallery_div = $(window);
+  if(gallery_div.scrollTop() == $(document).height() - gallery_div.height()){
+  this.load();
+  }
+  },   
+ load:function(){
+ if(this.running){
+  return;
+ }
+ this.running= true;
+ var _gallery = this;
+ $.ajax({
+ type:"get",
+ url: this.url,
+ success: function(data){
+ var image = data.split('|');
+ $.each(image,function(index){
+    
+ _gallery.display(this);
+ });
+ },
+ error:function(xhr,status){
+   if(_gallery.attempt-- == 0){
+    _gallery.reset();
+
+    return;
+   }
+   setTimeout(function(){
+   _gallery.load();
+   }, _gallery.delay *= 2);
+ },
+ complete: function(){
+     
+     _gallery.running=false;
+  }
+ });
+ },
+ display:function(image_url){
+ $('<img></img>')
+ .attr('src', 'images/' +image_url)
+ .addClass('col-xs-12 img-responsive')
+ .hide()
+ .on('load',function(){
+ $(this).fadeIn();
+ })
+ .appendTo(this.container);
+ }
+ }; 
+ 
+ </script>
+<script type="text/javascript" src="bootstrap3/dist/js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap3/dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="Myicons/svg-with-js/js/fontawesome-all.js"></script>
+</body>
+</html>
